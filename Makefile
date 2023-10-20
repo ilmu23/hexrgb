@@ -1,0 +1,114 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: ivalimak <ivalimak@student.hive.fi>        +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/09/30 17:08:20 by ivalimak          #+#    #+#              #
+#    Updated: 2023/10/20 20:09:37 by ivalimak         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+NAME			= hexrgb
+MANFILE			= inc/man/hexrgb.1
+
+CC				= gcc
+CFLAGS			= -Wall -Wextra -Werror
+
+INSTALL_PATH	= /usr/local
+UINSTALL_PATH	= ~/.local
+MANFILE_PATH	= /usr/local/man/man1
+UMANFILE_PATH	= ~/.local/man/man1
+
+SRCDIR			= src
+OBJDIR			= obj
+LIBDIR			= lib
+INCLUDE			= -I inc -I lib
+
+SRCS			= $(wildcard $(SRCDIR)/*.c)
+OBJS			= $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
+
+all: $(NAME)
+
+install:
+ifeq ($(shell whoami),root)
+	@make --no-print-directory rootinstall
+else
+	@make --no-print-directory userinstall
+endif
+
+uninstall:
+ifeq ($(shell whoami),root)
+	@make --no-print-directory rootuninstall
+else
+	@make --no-print-directory useruninstall
+endif
+
+rootinstall: $(INSTALL_PATH) $(MANFILE_PATH)
+ifeq ($(shell ls 2>/dev/null $(INSTALL_PATH)/bin | grep $(NAME)),$(NAME))
+	@echo Reinstalling $(NAME)...
+else
+	@echo Installing $(NAME)...
+endif
+	@cp $(NAME) $(INSTALL_PATH)/bin/$(NAME)
+	@cp $(MANFILE) $(MANFILE_PATH)/vimtype.1
+	@echo Installation complete
+
+rootuninstall:
+	@echo Uninstalling $(NAME)...
+	@rm -f $(INSTALL_PATH)/bin/$(NAME)
+	@rm -f $(MANFILE_PATH)/vimtype.1
+	@echo $(NAME) uninstalled
+
+userinstall: $(UINSTALL_PATH) $(UMANFILE_PATH)
+	@echo NOTE: Installing to $(UINSTALL_PATH)/bin, add it to your PATH if not already added
+ifeq ($(shell ls 2>/dev/null $(UINSTALL_PATH)/bin | grep $(NAME)),$(NAME))
+	@echo Reinstalling $(NAME)...
+else
+	@echo Installing $(NAME)...
+endif
+	@cp $(NAME) $(UINSTALL_PATH)/bin/$(NAME)
+	@cp $(MANFILE) $(UMANFILE_PATH)/vimtype.1
+	@echo Installataion complete
+
+useruninstall:
+	@echo Uninstalling $(NAME)...
+	@rm -f $(UINSTALL_PATH)/bin/$(NAME)
+	@rm -f $(UMANFILE_PATH)/vimtype.1
+	@echo $(NAME) uninstalled
+
+$(NAME): $(OBJDIR) $(OBJS)
+	@echo Compiling $(NAME)...
+	@$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) -L $(LIBDIR) -lft -o $(NAME)
+
+$(INSTALL_PATH):
+	@mkdir -p $(INSTALL_PATH)
+
+$(UINSTALL_PATH):
+	@mkdir -p $(UINSTALL_PATH)
+
+$(MANFILE_PATH):
+	@mkdir -p $(MANFILE_PATH)
+
+$(UMANFILE_PATH):
+	@mkdir -p $(UMANFILE_PATH)
+
+$(OBJDIR):
+	@echo Creating objdir...
+	@mkdir obj
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.c
+	@norminette $<
+	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+
+clean:
+	@rm -f $(OBJS)
+
+fclean: clean
+	@rm -rf $(OBJDIR)
+	@rm -f $(NAME)
+
+re: fclean all
+
+.PHONY: all clean fclean re
