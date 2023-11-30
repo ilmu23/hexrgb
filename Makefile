@@ -26,6 +26,8 @@ OBJDIR			= obj
 LIBDIR			= lib
 INCLUDE			= -I inc -I lib
 
+LIBFT			= $(LIBDIR)/libft.a
+
 SRCS			= $(SRCDIR)/main.c \
 				  $(SRCDIR)/utils.c \
 				  $(SRCDIR)/convert.c
@@ -81,7 +83,7 @@ useruninstall:
 	@rm -f $(UMANFILE_PATH)/vimtype.1
 	@echo $(NAME) uninstalled
 
-$(NAME): $(OBJDIR) $(OBJS)
+$(NAME): $(LIBFT) $(OBJDIR) $(OBJS)
 	@echo Compiling $(NAME)...
 	@$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) -L $(LIBDIR) -lft -o $(NAME)
 
@@ -97,6 +99,9 @@ $(MANFILE_PATH):
 $(UMANFILE_PATH):
 	@mkdir -p $(UMANFILE_PATH)
 
+$(LIBFT):
+	@make -C $(LIBDIR)/libft --no-print-directory
+
 $(OBJDIR):
 	@echo Creating objdir...
 	@mkdir obj
@@ -106,9 +111,11 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
+	@make -C $(LIBDIR)/libft clean --no-print-directory
 	@rm -f $(OBJS)
 
 fclean: clean
+	@make -C $(LIBDIR)/libft fclean --no-print-directory
 	@rm -rf $(OBJDIR)
 	@rm -f $(NAME)
 

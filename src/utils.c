@@ -56,7 +56,7 @@ char	**itohex(char **rgb)
 			value += rgb[i][j++] - '0';
 		}
 		free(rgb[i]);
-		rgb[i++] = ft_itox(value);
+		rgb[i++] = ft_uitox((unsigned int)value);
 	}
 	return (rgb);
 }
