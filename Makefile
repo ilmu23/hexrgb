@@ -6,7 +6,7 @@
 #    By: ivalimak <ivalimak@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/30 17:08:20 by ivalimak          #+#    #+#              #
-#    Updated: 2023/10/20 20:09:37 by ivalimak         ###   ########.fr        #
+#    Updated: 2023/10/20 20:28:22 by ivalimak         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,10 @@ OBJDIR			= obj
 LIBDIR			= lib
 INCLUDE			= -I inc -I lib
 
-SRCS			= $(wildcard $(SRCDIR)/*.c)
+SRCS			= $(SRCDIR)/main.c \
+				  $(SRCDIR)/utils.c \
+				  $(SRCDIR)/convert.c
+
 OBJS			= $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
 
 all: $(NAME)
@@ -52,7 +55,7 @@ else
 	@echo Installing $(NAME)...
 endif
 	@cp $(NAME) $(INSTALL_PATH)/bin/$(NAME)
-	@cp $(MANFILE) $(MANFILE_PATH)/vimtype.1
+	@cp $(MANFILE) $(MANFILE_PATH)/hexrgb.1
 	@echo Installation complete
 
 rootuninstall:
@@ -69,7 +72,7 @@ else
 	@echo Installing $(NAME)...
 endif
 	@cp $(NAME) $(UINSTALL_PATH)/bin/$(NAME)
-	@cp $(MANFILE) $(UMANFILE_PATH)/vimtype.1
+	@cp $(MANFILE) $(UMANFILE_PATH)/hexrgb.1
 	@echo Installataion complete
 
 useruninstall:
@@ -99,7 +102,7 @@ $(OBJDIR):
 	@mkdir obj
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@norminette $<
+	@echo Compiling $@...
 	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:

@@ -17,12 +17,14 @@ int	main(int argc, char **argv)
 	t_color	*color;
 	char	*out;
 
-	color = malloc(argc * sizeof(t_color));
+	color = malloc(sizeof(t_color));
+	if (!color)
+		return (1);
 	parseargs(argc, argv, color);
 	out = convert(color);
 	if (argc == 2 && *argv[1] == '-')
 		free(color->value);
-	if (argc == 1)
+	else if (argc == 1)
 		free(color->value);
 	free(color);
 	if (!out)

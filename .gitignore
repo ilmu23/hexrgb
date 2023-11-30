@@ -60,3 +60,6 @@ vgcore.*
 
 # Library headers
 lib/*.h
+
+# LSP headers
+src/*.h

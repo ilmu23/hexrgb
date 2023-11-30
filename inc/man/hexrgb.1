@@ -1,10 +1,16 @@
-.TH hexrgb 1 "OCTOBER 2023"
+.TH hexrgb 1 "NOVEMBER 2023"
 .SH NAME
-hexrgb \- convert hex color values to rgb and vice versa
+
+hexrgb \- convert hex color values to rgb and vice versa.
+
 .SH SYNOPSIS
-.B hexrgb [-h | -r]
+
+.B hexrgb [ -h | -r ] [
 .I value
+.B ]
+
 .SH DESCRIPTION
+
 .B hexrgb
 converts the value from hex to rgb (-h) or from rgb to hex (-r).
 
@@ -15,6 +21,50 @@ is equal to
 .I value
 
 If no value is given, it will be read from stdin.
-If no arguments are given, the value is read from stdin and interpreted as a hex value
+
+If no arguments are given, the value is read from stdin and interpreted as a hex value.
+
+.SH SUPPORTED FORMATS
+
+.SS HEX
+
+Both values starting with and without a 
+.B "#" 
+are supported.
+
+
+Both upper and lowercase characters are supported as input. Output will always be lowercase.
+
+.SS RGB
+
+Rgb values must be separated by a 
+.B "," 
+and entered without spaces.
+
+.SH EXAMPLES
+
+.B hexrgb -h
+.I ff25d8
+
+Converts the hex value ff25d8 to rgb
+
+.B hexrgb
+.I #2342fd
+
+Same as above, this time without the -h flag
+
+.B hexrgb -r
+.I 124,82,6
+
+Converts the rgb value 124,82,6 to hex
+
+.B hexrgb
+
+Takes a hex value from stdin and converts it to rgb
+
+.B xcolor | hexrgb
+
+Takes the hex value output by xcolor and converts it to rgb
+
 .SH AUTHOR
 Ilmari Välimäki <ilmu@420blaze.it>

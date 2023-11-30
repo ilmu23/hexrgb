@@ -17,17 +17,11 @@ char	*convert(t_color *color)
 	if (!(color->value))
 	{
 		if (color->type == 'h')
-		{
 			color->value = getinput(1);
-			if (!(color->value))
-				return (NULL);
-		}
 		else
-		{
 			color->value = getinput(2);
-			if (!(color->value))
-				return (NULL);
-		}
+		if (!(color->value))
+			return (NULL);
 	}
 	if (color->type == 'r')
 		return (rgbtohex(color->value));
