@@ -6,34 +6,76 @@
 /*   By: ivalimak <ivalimak@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:05:16 by ivalimak          #+#    #+#             */
-/*   Updated: 2023/10/20 20:14:12 by ivalimak         ###   ########.fr       */
+/*   Updated: 2024/03/16 10:22:47 by ivalimak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HEXRGB_H
 # define HEXRGB_H
-# include <ctype.h>
+# include <errno.h>
 # include <stdio.h>
+# include <fcntl.h>
 # include <string.h>
+# include <unistd.h>
 # include "libft.h"
 
-typedef struct s_color {
-	char	type;
-	char	*value;
-}	t_color;
+# define SGR_BOLDRON "\e[1;31m"
+# define SGR_ULINEON "\e[4m"
+# define SGR_RESET "\e[m"
 
-// main.c
-void	parseargs(int argc, char **argv, t_color *color);
+# define VERSION "1.0"
 
-// convert.c
-char	**getvalues(char *value);
-char	*convert(t_color *color);
-char	*hextorgb(char *value);
-char	*rgbtohex(char *value);
+typedef enum e_type
+{
+	HEXV,
+	RGBV,
+	ANY,
+	ERR
+}	t_type;
+
+typedef enum e_vase
+{
+	UPPER,
+	LOWER
+}	t_case;
+
+typedef enum e_input
+{
+	DEFAULT,
+	INFILE
+}	t_input;
+
+typedef enum e_format
+{
+	FULL,
+	SHORT
+}	t_format;
+
+typedef struct s_opts
+{
+	t_type		type;
+	t_case		xcase;
+	t_input		input;
+	t_format	format;
+	uint8_t		color;
+	size_t		optblks;
+}	t_opts;
+
+// opts.c
+t_opts	parseopts(char **argv);
+
+// valid.c
+uint8_t	isvalid(const char *val, const t_type type);
+uint8_t	ishex(const char *val);
+uint8_t	isrgb(const char *val);
 
 // utils.c
-char	*getinput(int type);
-char	**itohex(char **rgb);
-int		hextoi(char *value);
+t_type	determinetype(const char *val);
+size_t	countchars(const char *s, const uint8_t c);
+uint8_t	invalidchars(const char *val);
+void	setcolor(const char *val, const t_type type);
+
+// error.c
+void	printerror(const char *val, const t_type type);
 
 #endif

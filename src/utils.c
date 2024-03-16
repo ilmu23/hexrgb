@@ -6,83 +6,82 @@
 /*   By: ivalimak <ivalimak@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 17:48:29 by ivalimak          #+#    #+#             */
-/*   Updated: 2023/10/20 19:47:52 by ivalimak         ###   ########.fr       */
+/*   Updated: 2024/03/16 05:02:52 by ivalimak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "hexrgb.h"
 
-int	hextoi(char *value)
-{
-	int	out;
+static inline char	**getvals(const char *val);
 
-	if (isupper(*value) > 0)
-		*value += 32;
-	if (isupper(*(value + 1)) > 0)
-		*(value + 1) += 32;
-	if (isdigit(*value) > 0)
-		out = *value - '0';
-	else if (*value > 96 && *value < 103)
-		out = *value - 87;
-	else
-		return (0);
-	value++;
-	out = out * 16;
-	if (isdigit(*value) > 0)
-		out += *value - '0';
-	else if (*value > 96 && *value < 103)
-		out += *value - 87;
-	else
-		return (0);
-	return (out);
+t_type	determinetype(const char *val)
+{
+	if (ishex(val))
+		return (HEXV);
+	if (isrgb(val))
+		return (RGBV);
+	return (ERR);
 }
 
-char	**itohex(char **rgb)
+size_t	countchars(const char *s, const uint8_t c)
 {
-	size_t	i;
-	size_t	j;
-	int		value;
+	size_t	n;
 
-	if (!rgb)
+	n = 0;
+	while (*s)
+	{
+		if (*s++ == c)
+			n++;
+	}
+	return (n);
+}
+
+uint8_t	invalidchars(const char *val)
+{
+	if (*val == '#')
+		val++;
+	while (*val)
+	{
+		if (ft_isdigit(*val)
+			|| (ft_toupper(*val) >= 'A' && ft_toupper(*val) <= 'F'))
+			val++;
+		else
+			return (1);
+	}
+	return (0);
+}
+
+void	setcolor(const char *val, const t_type type)
+{
+	char	**vals;
+
+	if (type == RGBV)
+		vals = ft_pusharr(ft_split(ft_push((void *)val), ','));
+	else
+		vals = getvals(ft_push((void *)val));
+	if (!vals)
+		return ;
+	ft_printf("\e[38;2;%u;%u;%um", ft_atou64(vals[0]),
+		ft_atou64(vals[1]), ft_atou64(vals[2]));
+	ft_popblks(5, val, vals, vals[0], vals[1], vals[2]);
+}
+
+static inline char	**getvals(const char *val)
+{
+	char	**out;
+
+	out = ft_push(ft_calloc(4, sizeof(char *)));
+	if (!out)
 		return (NULL);
-	i = 0;
-	while (i < 3)
+	if (*val == '#')
+		val++;
+	out[0] = ft_push(ft_utoa(ft_atou_base(ft_substr(val, 0, 2), HEX)));
+	out[1] = ft_push(ft_utoa(ft_atou_base(ft_substr(val, 2, 2), HEX)));
+	out[2] = ft_push(ft_utoa(ft_atou_base(ft_substr(val, 4, 2), HEX)));
+	if (!out[0] || !out[1] || !out[2])
 	{
-		j = 0;
-		value = 0;
-		while (rgb[i][j])
-		{
-			value = value * 10;
-			value += rgb[i][j++] - '0';
-		}
-		free(rgb[i]);
-		rgb[i++] = ft_uitox((unsigned int)value);
-	}
-	return (rgb);
-}
-
-char	*getinput(int type)
-{
-	char	*out;
-	int		rv;
-
-	if (type == 1)
-	{
-		out = calloc(9, sizeof(char));
-		if (!out)
-			return (NULL);
-		if (read(0, out, 7) < 0)
-			return (NULL);
-	}
-	else
-	{
-		out = calloc(12, sizeof(char));
-		if (!out)
-			return (NULL);
-		rv = read(0, out, 11);
-		if (rv == -1)
-			return (NULL);
-		out[rv - 1] = '\0';
+		ft_popblks(4, out, out[0], out[1], out[2]);
+		return (NULL);
 	}
 	return (out);
 }

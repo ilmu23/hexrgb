@@ -6,37 +6,49 @@
 #    By: ivalimak <ivalimak@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/30 17:08:20 by ivalimak          #+#    #+#              #
-#    Updated: 2023/10/20 20:28:22 by ivalimak         ###   ########.fr        #
+#    Updated: 2024/03/16 09:21:15 by ivalimak         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME			= hexrgb
-MANFILE			= inc/man/hexrgb.1
+NAME	=	hexrgb
+MANFILE	=	man/hexrgb.1
 
-CC				= gcc
-CFLAGS			= -Wall -Wextra -Werror
+BUILD	=	normal
 
-INSTALL_PATH	= /usr/local
-UINSTALL_PATH	= ~/.local
-MANFILE_PATH	= /usr/local/man/man1
-UMANFILE_PATH	= ~/.local/man/man1
+CC				=	cc
+cflags.common	=	-Wall -Wextra -Werror
+cflags.normal	=	-Ofast
+cflags.debug	=	-g
+cflags.debugm 	=	$(cflags.debug) -D DEBUG_MSG=1
+cflags.asan		=	$(cflags.debug) -fsanitize=address
+CFLAGS			=	$(cflags.common) $(cflags.$(BUILD))
 
-SRCDIR			= src
-OBJDIR			= obj
-LIBDIR			= lib
-INCLUDE			= -I inc -I lib
+INSTALL_PATH	=	/usr/local/bin
+UINSTALL_PATH	=	~/.local/bin
+MANFILE_PATH	=	/usr/local/man/man1
+UMANFILE_PATH	=	~/.local/man/man1
 
-LIBFT			= $(LIBDIR)/libft.a
+CHECKINSTALL	= 	./checkinstall.sh
 
-SRCS			= $(SRCDIR)/main.c \
-				  $(SRCDIR)/utils.c \
-				  $(SRCDIR)/convert.c
+SRCDIR	=	src
+OBJDIR	=	obj
+LIBDIR	=	libft
+INCDIR	=	inc
 
-OBJS			= $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
+LIBFT	=	$(LIBDIR)/libft.a
 
-all: $(NAME)
+FILES	=	main.c \
+			opts.c \
+			valid.c \
+			utils.c \
+			error.c
 
-install:
+SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))
+OBJS	=	$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
+
+all:  $(OBJDIR) $(NAME)
+
+install: all
 ifeq ($(shell whoami),root)
 	@make --no-print-directory rootinstall
 else
@@ -51,41 +63,33 @@ else
 endif
 
 rootinstall: $(INSTALL_PATH) $(MANFILE_PATH)
-ifeq ($(shell ls 2>/dev/null $(INSTALL_PATH)/bin | grep $(NAME)),$(NAME))
-	@echo Reinstalling $(NAME)...
-else
-	@echo Installing $(NAME)...
-endif
-	@cp $(NAME) $(INSTALL_PATH)/bin/$(NAME)
+	@$(CHECKINSTALL) root $(NAME)
+	@cp $(NAME) $(INSTALL_PATH)/$(NAME)
 	@cp $(MANFILE) $(MANFILE_PATH)/hexrgb.1
-	@echo Installation complete
+	@printf "\e[35mHEXRGB >\e[m Installation complete\n" $(NAME)
 
 rootuninstall:
-	@echo Uninstalling $(NAME)...
-	@rm -f $(INSTALL_PATH)/bin/$(NAME)
-	@rm -f $(MANFILE_PATH)/vimtype.1
-	@echo $(NAME) uninstalled
+	@printf "\e[35mHEXRGB >\e[m Uninstalling %s...\n" $(NAME)
+	@rm -f $(INSTALL_PATH)/$(NAME)
+	@rm -f $(MANFILE_PATH)/hexrgb.1
+	@printf "\e[35mHEXRGB >\e[m %s uninstalled\n" $(NAME)
 
 userinstall: $(UINSTALL_PATH) $(UMANFILE_PATH)
-	@echo NOTE: Installing to $(UINSTALL_PATH)/bin, add it to your PATH if not already added
-ifeq ($(shell ls 2>/dev/null $(UINSTALL_PATH)/bin | grep $(NAME)),$(NAME))
-	@echo Reinstalling $(NAME)...
-else
-	@echo Installing $(NAME)...
-endif
-	@cp $(NAME) $(UINSTALL_PATH)/bin/$(NAME)
+	@printf "\e[35;1mHEXRGB >\e[m Installing to \e[33m%s\e[m, add it to your PATH if not alrady added\n" $(UINSTALL_PATH)
+	@$(CHECKINSTALL) user $(NAME)
+	@cp $(NAME) $(UINSTALL_PATH)/$(NAME)
 	@cp $(MANFILE) $(UMANFILE_PATH)/hexrgb.1
-	@echo Installataion complete
+	@printf "\e[35mHEXRGB >\e[m Installation complete\n" $(NAME)
 
 useruninstall:
-	@echo Uninstalling $(NAME)...
-	@rm -f $(UINSTALL_PATH)/bin/$(NAME)
-	@rm -f $(UMANFILE_PATH)/vimtype.1
-	@echo $(NAME) uninstalled
+	@printf "\e[35mHEXRGB >\e[m Uninstalling %s...\n" $(NAME)
+	@rm -f $(UINSTALL_PATH)/$(NAME)
+	@rm -f $(UMANFILE_PATH)/hexrgb.1
+	@printf "\e[35mHEXRGB >\e[m %s uninstalled\n" $(NAME)
 
-$(NAME): $(LIBFT) $(OBJDIR) $(OBJS)
-	@echo Compiling $(NAME)...
-	@$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) -L $(LIBDIR) -lft -o $(NAME)
+$(NAME): $(LIBFT) $(OBJS)
+	@printf "\e[35mHEXRGB >\e[m Compiling %s...\n" $@
+	@$(CC) $(CFLAGS) -I$(INCDIR) -I$(LIBDIR)/$(INCDIR) $(OBJS) -L$(LIBDIR) -lft -o $(NAME)
 
 $(INSTALL_PATH):
 	@mkdir -p $(INSTALL_PATH)
@@ -100,25 +104,25 @@ $(UMANFILE_PATH):
 	@mkdir -p $(UMANFILE_PATH)
 
 $(LIBFT):
-	@make -C $(LIBDIR)/libft --no-print-directory
+	@make -C $(LIBDIR) --no-print-directory BUILD=$(BUILD)
 
 $(OBJDIR):
-	@echo Creating objdir...
+	@printf "\e[35mHEXRGB >\e[m Creating objdir...\n"
 	@mkdir obj
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@echo Compiling $@...
-	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	@printf "\e[35mHEXRGB >\e[m Compiling %s\n" $@
+	@$(CC) $(CFLAGS) -I$(INCDIR) -I$(LIBDIR)/$(INCDIR) -c $< -o $@
 
 clean:
-	@make -C $(LIBDIR)/libft clean --no-print-directory
+	@make -C $(LIBDIR) clean --no-print-directory BUILD=$(BUILD)
 	@rm -f $(OBJS)
 
 fclean: clean
-	@make -C $(LIBDIR)/libft fclean --no-print-directory
+	@make -C $(LIBDIR) fclean --no-print-directory BUILD=$(BUILD)
 	@rm -rf $(OBJDIR)
 	@rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all install uninstall clean fclean re

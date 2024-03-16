@@ -1,0 +1,4 @@
+CompileFlags:
+  Add:
+    - "-I/home/ilmu/Projects/hexrgb/inc"
+    - "-I/home/ilmu/Projects/hexrgb/libft/inc"

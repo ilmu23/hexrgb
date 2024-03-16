@@ -1,0 +1,97 @@
+.TH hexrgb 1 "MARCH 2024"
+.SH NAME
+
+hexrgb \- convert hex color values to RGB and vice versa.
+
+.SH SYNOPSIS
+
+.B hexrgb
+[\fI\, option \/\fR]... [\fI\, -v \/\fR] [\fI\, value \&\fR]...
+
+.SH DESCRIPTION
+
+.B hexrgb
+converts values between hex and RGB.
+
+By default hexrgb will try to determine whether a given value is in hex or RGB format.
+This can be overridden by passing either the \fI\,-h\/\fR or \fI\,-r\/\fR option
+
+If no values are given, they will be read from stdin until an EOF is received.
+
+.SH OPTIONS
+
+.SS -c
+All conversions are printed in the converted color
+
+.SS -h
+All values are treated as hex values
+
+.SS -r
+All values are treated as RGB values
+
+.SS -s
+Displays output in a shortened format
+
+.SS -l
+Makes hex output lowercase
+
+.SS -f
+Treats all arguments as files to read values from
+
+.SS -v
+Prints version and exits
+
+If both the \fI\,-h\/\fR and \fI\,-r\/\fR options are passed, only the first one is taken into account
+
+Duplicate options are ignored
+
+.SH SUPPORTED FORMATS
+
+.SS HEX
+
+Both values starting with and without a \fI\,"#"\/\fR are supported
+
+
+Both upper and lowercase characters are supported as input. Output will be uppercase by default
+
+.SS RGB
+
+RGB values must be separated by a \fI\,","\/\fR and entered without spaces
+
+.SH EXAMPLES
+
+.B hexrgb 
+\fI\,-h\/\fR ff25d8
+
+Converts the hex value ff25d8 to RGB
+
+.B hexrgb 
+\fI\,-r\/\fR 124,82,6
+
+Converts the RGB value 124,82,6 to hex
+
+.B hexrgb
+ff25d8 124,82,6
+
+Automatically determines types of ff24d8 and 124,82,6 and converts them
+
+.B hexrgb 
+\fI\,-c\/\fR ff25d8 124,82,6
+
+Same as above, but with colored output
+
+.B hexrgb
+
+Reads values from stdin, automatically determining their type
+
+.B hexrgb
+\fI\,-fcs\/\fR input.txt data.txt
+
+Reads values from input.txt and data.txt with colored short form output
+
+.B xcolor | hexrgb
+
+Takes the hex value output by xcolor and converts it to RGB
+
+.SH AUTHOR
+Ilmari Välimäki <ilmu@420blaze.it>
