@@ -6,12 +6,11 @@
 #    By: ivalimak <ivalimak@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/30 17:08:20 by ivalimak          #+#    #+#              #
-#    Updated: 2024/03/16 09:21:15 by ivalimak         ###   ########.fr        #
+#    Updated: 2024/03/16 12:26:22 by ivalimak         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	hexrgb
-MANFILE	=	man/hexrgb.1
 
 BUILD	=	normal
 
@@ -28,12 +27,14 @@ UINSTALL_PATH	=	~/.local/bin
 MANFILE_PATH	=	/usr/local/man/man1
 UMANFILE_PATH	=	~/.local/man/man1
 
+CHECKPATH		=	./checkpath.sh
 CHECKINSTALL	= 	./checkinstall.sh
 
 SRCDIR	=	src
 OBJDIR	=	obj
 LIBDIR	=	libft
 INCDIR	=	inc
+MANDIR	=	man
 
 LIBFT	=	$(LIBDIR)/libft.a
 
@@ -43,8 +44,11 @@ FILES	=	main.c \
 			utils.c \
 			error.c
 
+MANFILE	=	hexrgb.1
+
 SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))
 OBJS	=	$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRCS))
+MANF	=	$(addprefix $(MANDIR)/, $(MANFILE))
 
 all:  $(OBJDIR) $(NAME)
 
@@ -63,32 +67,32 @@ else
 endif
 
 rootinstall: $(INSTALL_PATH) $(MANFILE_PATH)
-	@$(CHECKINSTALL) root $(NAME)
+	@$(CHECKINSTALL) $(NAME) $(INSTALL_PATH)
 	@cp $(NAME) $(INSTALL_PATH)/$(NAME)
-	@cp $(MANFILE) $(MANFILE_PATH)/hexrgb.1
-	@printf "\e[35mHEXRGB >\e[m Installation complete\n" $(NAME)
+	@cp $(MANF) $(MANFILE_PATH)/$(MANFILE)
+	@printf "\e[32mHEXRGB >\e[m Installation complete\n" $(NAME)
 
 rootuninstall:
-	@printf "\e[35mHEXRGB >\e[m Uninstalling %s...\n" $(NAME)
+	@printf "\e[32mHEXRGB >\e[m Uninstalling %s...\n" $(NAME)
 	@rm -f $(INSTALL_PATH)/$(NAME)
-	@rm -f $(MANFILE_PATH)/hexrgb.1
-	@printf "\e[35mHEXRGB >\e[m %s uninstalled\n" $(NAME)
+	@rm -f $(MANFILE_PATH)/$(MANFILE)
+	@printf "\e[32mHEXRGB >\e[m %s uninstalled\n" $(NAME)
 
 userinstall: $(UINSTALL_PATH) $(UMANFILE_PATH)
-	@printf "\e[35;1mHEXRGB >\e[m Installing to \e[33m%s\e[m, add it to your PATH if not alrady added\n" $(UINSTALL_PATH)
-	@$(CHECKINSTALL) user $(NAME)
+	@$(CHECKPATH) $(UINSTALL_PATH)
+	@$(CHECKINSTALL) $(NAME) $(UINSTALL_PATH)
 	@cp $(NAME) $(UINSTALL_PATH)/$(NAME)
-	@cp $(MANFILE) $(UMANFILE_PATH)/hexrgb.1
-	@printf "\e[35mHEXRGB >\e[m Installation complete\n" $(NAME)
+	@cp $(MANF) $(UMANFILE_PATH)/$(MANFILE)
+	@printf "\e[32mHEXRGB >\e[m Installation complete\n" $(NAME)
 
 useruninstall:
-	@printf "\e[35mHEXRGB >\e[m Uninstalling %s...\n" $(NAME)
+	@printf "\e[32mHEXRGB >\e[m Uninstalling %s...\n" $(NAME)
 	@rm -f $(UINSTALL_PATH)/$(NAME)
-	@rm -f $(UMANFILE_PATH)/hexrgb.1
-	@printf "\e[35mHEXRGB >\e[m %s uninstalled\n" $(NAME)
+	@rm -f $(UMANFILE_PATH)/$(MANFILE)
+	@printf "\e[32mHEXRGB >\e[m %s uninstalled\n" $(NAME)
 
 $(NAME): $(LIBFT) $(OBJS)
-	@printf "\e[35mHEXRGB >\e[m Compiling %s...\n" $@
+	@printf "\e[32mHEXRGB >\e[m Compiling %s...\n" $@
 	@$(CC) $(CFLAGS) -I$(INCDIR) -I$(LIBDIR)/$(INCDIR) $(OBJS) -L$(LIBDIR) -lft -o $(NAME)
 
 $(INSTALL_PATH):
@@ -107,11 +111,11 @@ $(LIBFT):
 	@make -C $(LIBDIR) --no-print-directory BUILD=$(BUILD)
 
 $(OBJDIR):
-	@printf "\e[35mHEXRGB >\e[m Creating objdir...\n"
+	@printf "\e[32mHEXRGB >\e[m Creating objdir...\n"
 	@mkdir obj
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@printf "\e[35mHEXRGB >\e[m Compiling %s\n" $@
+	@printf "\e[32mHEXRGB >\e[m Compiling %s\n" $@
 	@$(CC) $(CFLAGS) -I$(INCDIR) -I$(LIBDIR)/$(INCDIR) -c $< -o $@
 
 clean:
