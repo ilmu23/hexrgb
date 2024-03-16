@@ -6,7 +6,7 @@
 /*   By: ivalimak <ivalimak@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 16:05:16 by ivalimak          #+#    #+#             */
-/*   Updated: 2024/03/16 10:22:47 by ivalimak         ###   ########.fr       */
+/*   Updated: 2024/03/16 12:34:49 by ivalimak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef enum e_type
 	ERR
 }	t_type;
 
-typedef enum e_vase
+typedef enum e_case
 {
 	UPPER,
 	LOWER
